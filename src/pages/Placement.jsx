@@ -1,19 +1,40 @@
-// Placement.jsx — Placement Readiness page
+// Placement.jsx — Placement Readiness page (calculated from your real data)
+import { useState, useEffect } from "react";
 import Sidebar from "../Sidebar";
 import useUser from "../useUser";
+import { api } from "../api";
 
-const breakdown = [
-  { area: "DSA",           score: "65%" },
-  { area: "Core Subjects", score: "72%" },
-  { area: "Aptitude",      score: "58%" },
-  { area: "Communication", score: "60%" },
-  { area: "Projects",      score: "85%" },
-  { area: "Resume",        score: "90%" },
-];
-const tips = ["Improve Graphs and Trees in DSA.", "Practice quantitative aptitude regularly.", "Revise Operating System and Networks.", "Prepare project explanation for interviews."];
+const tipFor = {
+  "DSA":           "Solve more DSA problems and mark them as Solved.",
+  "Core Subjects": "Complete more topics in DBMS, OS, CN and OOP.",
+  "Aptitude":      "Practice aptitude questions regularly and log your results.",
+  "Goals":         "Finish the goals you have set for yourself.",
+};
 
 function Placement() {
   const { initial } = useUser();
+  const [stats, setStats] = useState(null);
+
+  useEffect(() => {
+    api("/stats").then(setStats).catch((err) => alert(err.message));
+  }, []);
+
+  if (!stats) return <div className="min-h-screen bg-slate-900 text-slate-400 p-10">Loading...</div>;
+
+  const breakdown = [
+    { area: "DSA",           score: stats.dsa },
+    { area: "Core Subjects", score: stats.subjects },
+    { area: "Aptitude",      score: stats.aptitude },
+    { area: "Goals",         score: stats.goals },
+  ];
+  // Recommend the 3 weakest areas first
+  const tips = [...breakdown].sort((a, b) => a.score - b.score).slice(0, 3).map((b) => tipFor[b.area]);
+
+  const message =
+    stats.overall >= 75 ? "Great work! You are well prepared. Keep revising."
+    : stats.overall >= 40 ? "Your preparation is progressing well. Focus on your weakest areas."
+    : "You are just getting started. Add problems, practice and goals to build momentum.";
+
   return (
     <div className="flex min-h-screen bg-slate-900 text-slate-200">
       <Sidebar />
@@ -30,18 +51,18 @@ function Placement() {
           <section className="grid grid-cols-2 gap-5 mb-5">
             <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
               <h2 className="font-semibold text-slate-100">Overall Readiness</h2>
-              <div className="text-6xl font-extrabold text-purple-400 my-4">72%</div>
+              <div className="text-6xl font-extrabold text-purple-400 my-4">{stats.overall}%</div>
               <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full" style={{ width: "72%" }} />
+                <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full" style={{ width: stats.overall + "%" }} />
               </div>
-              <p className="text-sm text-slate-400 mt-4">Your preparation is progressing well. Focus more on aptitude and DSA.</p>
+              <p className="text-sm text-slate-400 mt-4">{message}</p>
             </div>
             <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
               <h2 className="font-semibold text-slate-100 mb-3">Area Breakdown</h2>
               {breakdown.map((b) => (
                 <div key={b.area} className="flex justify-between border-b border-slate-700 py-2 text-sm last:border-0">
                   <span className="text-slate-300">{b.area}</span>
-                  <b className="text-indigo-400">{b.score}</b>
+                  <b className="text-indigo-400">{b.score}%</b>
                 </div>
               ))}
             </div>

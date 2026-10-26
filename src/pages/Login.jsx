@@ -1,6 +1,7 @@
 // Login.jsx — Login page shown to users who are not logged in
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { api, saveSession } from "../api";
 
 function Login() {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ function Login() {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  function handleLogin(e) {
+  async function handleLogin(e) {
     e.preventDefault(); // stop page from refreshing
 
     // Basic validation
@@ -20,22 +21,14 @@ function Login() {
       return;
     }
 
-    // Check if user exists in localStorage (saved during signup)
-    const savedUser = JSON.parse(localStorage.getItem("placetrack_user"));
-
-    if (!savedUser) {
-      setError("No account found. Please sign up first.");
-      return;
+    try {
+      // Ask the backend to check email + password
+      const data = await api("/login", "POST", form);
+      saveSession(data.token, data.user); // ✅ login success — save session
+      navigate("/"); // go to Dashboard
+    } catch (err) {
+      setError(err.message);
     }
-
-    if (savedUser.email !== form.email || savedUser.password !== form.password) {
-      setError("Incorrect email or password.");
-      return;
-    }
-
-    // ✅ Login success — save session
-    localStorage.setItem("placetrack_loggedin", "true");
-    navigate("/"); // go to Dashboard
   }
 
   return (

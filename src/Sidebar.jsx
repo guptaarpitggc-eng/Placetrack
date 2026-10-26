@@ -1,5 +1,6 @@
 // Sidebar.jsx — Left navigation menu shared on every page
 import { NavLink, useNavigate } from "react-router-dom";
+import { clearSession } from "./api";
 
 const navLinks = [
   { path: "/",          label: "🏠 Dashboard" },
@@ -9,6 +10,7 @@ const navLinks = [
   { path: "/planner",   label: "📅 Study Planner" },
   { path: "/goals",     label: "🎯 Goals" },
   { path: "/placement", label: "🏢 Placement" },
+  { path: "/resources", label: "🔗 Resources" },
   { path: "/profile",   label: "👤 Profile" },
 ];
 
@@ -43,7 +45,7 @@ function Sidebar() {
       {/* Logout */}
       <button
         onClick={() => {
-          localStorage.removeItem("placetrack_loggedin"); // clear session
+          clearSession(); // remove token + user
           navigate("/login");
         }}
         className="mt-auto text-left px-3 py-2 text-sm text-slate-400 hover:text-red-400 hover:bg-red-900/20 rounded-lg transition-all"

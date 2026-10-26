@@ -1,6 +1,7 @@
 // Signup.jsx — New user registration page
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { api, saveSession } from "../api";
 
 function Signup() {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ function Signup() {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  function handleSignup(e) {
+  async function handleSignup(e) {
     e.preventDefault();
 
     // Validation
@@ -28,14 +29,14 @@ function Signup() {
       return;
     }
 
-    // ✅ Save user to localStorage (later this will go to backend)
-    const newUser = { name: form.name, email: form.email, password: form.password };
-    localStorage.setItem("placetrack_user", JSON.stringify(newUser));
-
-    // Auto-login after signup
-    localStorage.setItem("placetrack_loggedin", "true");
-
-    navigate("/"); // go to Dashboard — everything starts fresh!
+    try {
+      // Save the new user in MySQL through the backend
+      const data = await api("/signup", "POST", { name: form.name, email: form.email, password: form.password });
+      saveSession(data.token, data.user); // auto-login after signup
+      navigate("/"); // go to Dashboard — everything starts fresh!
+    } catch (err) {
+      setError(err.message);
+    }
   }
 
   return (

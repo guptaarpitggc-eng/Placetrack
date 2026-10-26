@@ -1,40 +1,62 @@
-// DSA.jsx — DSA Tracker page
-import { useState } from "react";
+// DSA.jsx — DSA Tracker page (problems are saved in MySQL)
+import { useState, useEffect } from "react";
 import Sidebar from "../Sidebar";
 import useUser from "../useUser";
+import { api } from "../api";
 
-const startProblems = [
-  { name: "Two Sum",                 topic: "Arrays",      difficulty: "Easy",   status: "Solved" },
-  { name: "Maximum Subarray",        topic: "Arrays",      difficulty: "Medium", status: "Solved" },
-  { name: "Valid Anagram",           topic: "Strings",     difficulty: "Easy",   status: "Solved" },
-  { name: "Reverse Linked List",     topic: "Linked List", difficulty: "Easy",   status: "Pending" },
-  { name: "Binary Tree Level Order", topic: "Trees",       difficulty: "Medium", status: "Pending" },
-  { name: "Number of Islands",       topic: "Graphs",      difficulty: "Medium", status: "Solved" },
-];
-const topics = [{ name: "Arrays", pct: 75 }, { name: "Strings", pct: 67 }, { name: "Linked List", pct: 53 }, { name: "Trees", pct: 30 }];
 const EMPTY_FORM = { name: "", topic: "Arrays", difficulty: "Easy", status: "Pending" };
 
 function DSA() {
   const { initial } = useUser();
-  const [problems, setProblems]   = useState(startProblems);
+  const [problems, setProblems]   = useState([]);
   const [search, setSearch]       = useState("");
   const [filter, setFilter]       = useState("all");
   const [showModal, setShowModal] = useState(false);
   const [form, setForm]           = useState(EMPTY_FORM);
+
+  async function load() {
+    try { setProblems(await api("/problems")); }
+    catch (err) { alert(err.message); }
+  }
+  useEffect(() => { load(); }, []);
 
   const visible = problems.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase()) &&
     (filter === "all" || p.difficulty === filter)
   );
 
-  function saveProblem() {
+  async function saveProblem() {
     if (!form.name.trim()) return;
-    setProblems([...problems, form]);
-    setForm(EMPTY_FORM);
-    setShowModal(false);
+    try {
+      await api("/problems", "POST", form);
+      setForm(EMPTY_FORM);
+      setShowModal(false);
+      load();
+    } catch (err) { alert(err.message); }
+  }
+
+  // Click the status to cycle through Pending, In Progress, Solved and Revision Needed.
+  const statuses = ["Pending", "In Progress", "Solved", "Revision Needed"];
+  async function toggleStatus(p) {
+    const next = statuses[(statuses.indexOf(p.status) + 1) % statuses.length];
+    try { await api("/problems/" + p.id, "PUT", { status: next }); load(); }
+    catch (err) { alert(err.message); }
+  }
+  async function deleteProblem(id) {
+    await api("/problems/" + id, "DELETE");
+    load();
   }
 
   const solved = problems.filter((p) => p.status === "Solved").length;
+
+  // Topic progress is calculated from the problems list
+  const topicNames = [...new Set(problems.map((p) => p.topic))];
+  const topics = topicNames.map((name) => {
+    const all = problems.filter((p) => p.topic === name);
+    const done = all.filter((p) => p.status === "Solved").length;
+    return { name, pct: Math.round((done / all.length) * 100) };
+  });
+
   const inputCls = "w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 outline-none focus:border-indigo-500";
 
   return (
@@ -67,24 +89,31 @@ function DSA() {
           </div>
 
           <div className="bg-slate-800 border border-slate-700 rounded-xl p-5 mb-5">
-            <h2 className="font-semibold text-slate-100 mb-3">Problem List</h2>
-            <table className="w-full text-sm">
-              <thead><tr className="text-xs text-slate-500 border-b border-slate-700">{["Problem","Topic","Difficulty","Status"].map(h => <th key={h} className="text-left py-2 px-2">{h}</th>)}</tr></thead>
-              <tbody>
-                {visible.map((p, i) => (
-                  <tr key={i} className="border-b border-slate-700/50 last:border-0">
-                    <td className="py-3 px-2 text-slate-200">{p.name}</td>
-                    <td className="py-3 px-2 text-slate-400">{p.topic}</td>
-                    <td className="py-3 px-2 text-slate-400">{p.difficulty}</td>
-                    <td className={`py-3 px-2 font-semibold ${p.status === "Solved" ? "text-green-400" : "text-yellow-400"}`}>{p.status}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <h2 className="font-semibold text-slate-100 mb-3">Problem List <span className="text-xs text-slate-500 font-normal">(click a status to cycle through options)</span></h2>
+            {visible.length === 0 && <p className="text-sm text-slate-500 py-2">No problems yet. Click "+ Add Problem" to start.</p>}
+            {visible.length > 0 && (
+              <table className="w-full text-sm">
+                <thead><tr className="text-xs text-slate-500 border-b border-slate-700">{["Problem","Topic","Difficulty","Status",""].map((h, i) => <th key={i} className="text-left py-2 px-2">{h}</th>)}</tr></thead>
+                <tbody>
+                  {visible.map((p) => (
+                    <tr key={p.id} className="border-b border-slate-700/50 last:border-0">
+                      <td className="py-3 px-2 text-slate-200">{p.name}</td>
+                      <td className="py-3 px-2 text-slate-400">{p.topic}</td>
+                      <td className="py-3 px-2 text-slate-400">{p.difficulty}</td>
+                      <td className="py-3 px-2">
+                        <button onClick={() => toggleStatus(p)} className={`font-semibold text-xs ${p.status === "Solved" ? "text-green-400" : p.status === "Revision Needed" ? "text-orange-400" : p.status === "In Progress" ? "text-sky-400" : "text-yellow-400"}`}>{p.status}</button>
+                      </td>
+                      <td className="py-3 px-2 text-right"><button onClick={() => deleteProblem(p.id)} className="text-slate-500 hover:text-red-400 text-xs">Delete</button></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
 
           <div className="bg-slate-800 border border-slate-700 rounded-xl p-5">
             <h2 className="font-semibold text-slate-100 mb-3">Topic Progress</h2>
+            {topics.length === 0 && <p className="text-sm text-slate-500">Topic progress appears after you add problems.</p>}
             {topics.map((t) => (
               <div key={t.name} className="grid grid-cols-[120px_1fr_45px] items-center gap-3 mt-3 text-sm text-slate-300">
                 <span>{t.name}</span>
@@ -104,7 +133,7 @@ function DSA() {
               { label: "Problem Name", key: "name",       type: "input",  placeholder: "e.g. Two Sum" },
               { label: "Topic",        key: "topic",      type: "select", opts: ["Arrays","Strings","Linked List","Trees","Graphs"] },
               { label: "Difficulty",   key: "difficulty", type: "select", opts: ["Easy","Medium","Hard"] },
-              { label: "Status",       key: "status",     type: "select", opts: ["Pending","Solved"] },
+              { label: "Status",       key: "status",     type: "select", opts: ["Pending","In Progress","Solved","Revision Needed"] },
             ].map(({ label, key, type, opts, placeholder }) => (
               <div key={key} className="mb-3">
                 <label className="text-xs text-slate-400 mb-1 block">{label}</label>

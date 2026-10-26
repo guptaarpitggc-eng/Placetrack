@@ -11,12 +11,13 @@ import Planner   from "./pages/Planner";
 import Goals     from "./pages/Goals";
 import Placement from "./pages/Placement";
 import Profile   from "./pages/Profile";
+import Resources from "./pages/Resources";
 
 // ProtectedRoute — checks if user is logged in
 // If NOT logged in → send to /login
 // If logged in → show the page normally
 function ProtectedRoute({ children }) {
-  const isLoggedIn = localStorage.getItem("placetrack_loggedin");
+  const isLoggedIn = localStorage.getItem("placetrack_token");
   if (!isLoggedIn) return <Navigate to="/login" />;
   return children;
 }
@@ -38,6 +39,7 @@ function App() {
         <Route path="/goals"     element={<ProtectedRoute><Goals /></ProtectedRoute>} />
         <Route path="/placement" element={<ProtectedRoute><Placement /></ProtectedRoute>} />
         <Route path="/profile"   element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/resources" element={<ProtectedRoute><Resources /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   );

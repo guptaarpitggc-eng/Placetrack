@@ -1,32 +1,36 @@
-// Profile.jsx — reads name + email from signup (localStorage), other fields start blank
-import { useState } from "react";
+// Profile.jsx — loads and saves the profile in MySQL
+import { useState, useEffect } from "react";
 import Sidebar from "../Sidebar";
+import { api } from "../api";
 
 function Profile() {
-  // Read the user who signed up
-  const savedUser = JSON.parse(localStorage.getItem("placetrack_user")) || {};
-
   const [form, setForm] = useState({
-    name:        savedUser.name  || "",   // from signup
-    email:       savedUser.email || "",   // from signup
-    college:     "",                      // blank for new user
-    branch:      "",
-    year:        "",
-    role:        "",
+    name: "", email: "", college: "", branch: "", year: "", role: "",
     companyType: "Product Based",
-    level:       "Beginner",             // new user starts as Beginner
+    level: "Beginner",
   });
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState("");
+
+  // Load the saved profile from the backend
+  useEffect(() => {
+    api("/profile").then(setForm).catch((err) => setError(err.message));
+  }, []);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSave = () => {
-    // Save updated profile back to localStorage
-    const updatedUser = { ...savedUser, ...form };
-    localStorage.setItem("placetrack_user", JSON.stringify(updatedUser));
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
-  };
+  async function handleSave() {
+    setError("");
+    try {
+      await api("/profile", "PUT", form);
+      // keep the name/email in the header up to date
+      localStorage.setItem("placetrack_user", JSON.stringify({ name: form.name, email: form.email }));
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (err) {
+      setError(err.message);
+    }
+  }
 
   const inputCls = "w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 outline-none focus:border-indigo-500 mt-1";
   const userInitial = form.name ? form.name.charAt(0).toUpperCase() : "?";
@@ -69,7 +73,7 @@ function Profile() {
               {fields.map((f) => (
                 <div key={f.name}>
                   <label className="text-xs text-slate-400">{f.label}</label>
-                  <input className={inputCls} type={f.type} name={f.name} value={form[f.name]} onChange={handleChange} placeholder={f.placeholder} />
+                  <input className={inputCls} type={f.type} name={f.name} value={form[f.name] || ""} onChange={handleChange} placeholder={f.placeholder} />
                 </div>
               ))}
               <div>
@@ -92,6 +96,7 @@ function Profile() {
                 Save Changes
               </button>
               {saved && <span className="text-green-400 text-sm">✓ Changes saved!</span>}
+              {error && <span className="text-red-400 text-sm">{error}</span>}
             </div>
           </div>
         </main>
