@@ -1,4 +1,3 @@
-// Planner.jsx — Weekly Study Planner page (saved in MySQL)
 import { useState, useEffect } from "react";
 import Sidebar from "../Sidebar";
 import useUser from "../useUser";
@@ -46,7 +45,6 @@ function Planner() {
         <main className="max-w-5xl mx-auto p-7">
           <div className="mb-6"><h1 className="text-2xl font-bold text-slate-100">Weekly Study Plan</h1><p className="text-slate-400 text-sm mt-1">Organize your preparation time.</p></div>
 
-          {/* Add form */}
           <form onSubmit={addItem} className="flex gap-3 mb-5 flex-wrap">
             <select className={inputCls} value={form.day} onChange={(e) => setForm({ ...form, day: e.target.value })}>
               {DAYS.map((d) => <option key={d}>{d}</option>)}

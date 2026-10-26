@@ -1,4 +1,3 @@
-// Aptitude.jsx — Aptitude Preparation page (practice results saved in MySQL)
 import { useState, useEffect } from "react";
 import Sidebar from "../Sidebar";
 import useUser from "../useUser";
@@ -14,8 +13,8 @@ const percent = (a, b) => (b > 0 ? Math.round((a / b) * 100) : 0);
 
 function Aptitude() {
   const { initial } = useUser();
-  const [saved, setSaved]         = useState([]);   // rows saved in MySQL (only categories already practiced)
-  const [practice, setPractice]     = useState(null); // the category being practiced (or null)
+  const [saved, setSaved]         = useState([]);
+  const [practice, setPractice]     = useState(null);
   const [form, setForm]             = useState({ attempted: "", correct: "" });
 
   async function load() {
@@ -37,7 +36,7 @@ function Aptitude() {
     } catch (err) { alert(err.message); }
   }
 
-  // Always show the 3 categories; numbers are 0 until the user logs practice
+  // Include categories with no saved attempts so every practice area remains visible.
   const categories = categoryNames.map((name) => saved.find((r) => r.category === name) || { id: name, category: name, attempted: 0, correct: 0 });
 
   const attempted = categories.reduce((sum, c) => sum + c.attempted, 0);
@@ -56,7 +55,6 @@ function Aptitude() {
         <main className="max-w-5xl mx-auto p-7">
           <div className="mb-6"><h1 className="text-2xl font-bold text-slate-100">Aptitude Preparation</h1><p className="text-slate-400 text-sm mt-1">Track quantitative, logical and verbal preparation.</p></div>
 
-          {/* Stats */}
           <section className="grid grid-cols-3 gap-4 mb-5">
             {[["Questions Attempted", attempted], ["Correct Answers", correct], ["Accuracy", percent(correct, attempted) + "%"]].map(([label, val]) => (
               <div key={label} className="bg-slate-800 border border-slate-700 rounded-xl p-5">
@@ -66,7 +64,6 @@ function Aptitude() {
             ))}
           </section>
 
-          {/* Category Cards */}
           <section className="grid grid-cols-2 gap-4">
             {categories.map((c) => {
               const pct = percent(c.correct, c.attempted);

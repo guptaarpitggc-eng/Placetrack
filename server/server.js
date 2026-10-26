@@ -1,4 +1,3 @@
-// server.js — PlaceTrack backend (Express + MySQL). Simple and beginner friendly.
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
@@ -12,8 +11,6 @@ const SECRET = process.env.JWT_SECRET || "placetrack_dev_secret";
 app.use(cors());
 app.use(express.json());
 
-// Opening http://localhost:5000 in a browser just shows this message.
-// The real app is the React site on http://localhost:5173
 app.get("/", (req, res) => {
   res.send(`<body style="font-family:sans-serif;background:#0f172a;color:#e2e8f0;padding:40px">
     <h2>✅ PlaceTrack server is running</h2>
@@ -21,16 +18,14 @@ app.get("/", (req, res) => {
     <a style="color:#818cf8" href="http://localhost:5173">http://localhost:5173</a></p></body>`);
 });
 
-// ---------- small helpers ----------
-
-// Wraps a route so any error becomes a clean JSON message (no try/catch everywhere)
+// Normalize asynchronous route failures into a consistent API response.
 const wrap = (fn) => (req, res) =>
   fn(req, res).catch((err) => {
     console.error(err);
     res.status(500).json({ error: "Server error. Check the server terminal." });
   });
 
-// Login check: reads the token sent by React and finds the user id
+// Validate the bearer token and attach the authenticated user ID to the request.
 function auth(req, res, next) {
   const header = req.headers.authorization || "";
   const token = header.startsWith("Bearer ") ? header.slice(7) : null;
@@ -45,12 +40,9 @@ function auth(req, res, next) {
 
 const makeToken = (id) => jwt.sign({ id }, SECRET, { expiresIn: "7d" });
 
-// The only aptitude categories the app accepts
 const APTITUDE_CATEGORIES = ["Quantitative Aptitude", "Logical Reasoning", "Verbal Ability"];
 const RESOURCE_CATEGORIES = ["DSA", "Aptitude", "Core Subjects", "Web Development", "Interview Preparation", "Other"];
 const RESOURCE_TYPES = ["Website", "Video", "Article", "Practice"] ;
-
-// ---------- AUTH ----------
 
 app.post("/api/signup", wrap(async (req, res) => {
   const { name, email, password } = req.body;
@@ -66,7 +58,7 @@ app.post("/api/signup", wrap(async (req, res) => {
     "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
     [name.trim(), cleanEmail, hash]
   );
-  const id = result.insertId; // new users start with completely empty data
+  const id = result.insertId;
 
   res.json({ token: makeToken(id), user: { name: name.trim(), email: cleanEmail } });
 }));
@@ -82,8 +74,6 @@ app.post("/api/login", wrap(async (req, res) => {
 
   res.json({ token: makeToken(user.id), user: { name: user.name, email: user.email } });
 }));
-
-// ---------- PROFILE ----------
 
 app.get("/api/profile", auth, wrap(async (req, res) => {
   const [rows] = await pool.query(
@@ -107,8 +97,6 @@ app.put("/api/profile", auth, wrap(async (req, res) => {
   );
   res.json({ ok: true });
 }));
-
-// ---------- DSA PROBLEMS ----------
 
 app.get("/api/problems", auth, wrap(async (req, res) => {
   const [rows] = await pool.query("SELECT * FROM problems WHERE user_id = ? ORDER BY id", [req.userId]);
@@ -138,14 +126,11 @@ app.delete("/api/problems/:id", auth, wrap(async (req, res) => {
   res.json({ ok: true });
 }));
 
-// ---------- SUBJECTS ----------
-
 app.get("/api/subjects", auth, wrap(async (req, res) => {
   const [rows] = await pool.query("SELECT * FROM subjects WHERE user_id = ? ORDER BY id", [req.userId]);
   res.json(rows);
 }));
 
-// body: { name: "DBMS", total: 10 } — user adds their own subject
 app.post("/api/subjects", auth, wrap(async (req, res) => {
   const name = (req.body.name || "").trim();
   const total = Number(req.body.total);
@@ -161,7 +146,6 @@ app.delete("/api/subjects/:id", auth, wrap(async (req, res) => {
   res.json({ ok: true });
 }));
 
-// body: { done: 5 }  (kept between 0 and total)
 app.put("/api/subjects/:id", auth, wrap(async (req, res) => {
   await pool.query(
     "UPDATE subjects SET done = GREATEST(0, LEAST(total, ?)) WHERE id = ? AND user_id = ?",
@@ -170,14 +154,11 @@ app.put("/api/subjects/:id", auth, wrap(async (req, res) => {
   res.json({ ok: true });
 }));
 
-// ---------- APTITUDE ----------
-
 app.get("/api/aptitude", auth, wrap(async (req, res) => {
   const [rows] = await pool.query("SELECT * FROM aptitude WHERE user_id = ? ORDER BY id", [req.userId]);
   res.json(rows);
 }));
 
-// body: { category, attempted, correct } — adds a practice session to the totals (creates the row on first use)
 app.post("/api/aptitude/practice", auth, wrap(async (req, res) => {
   const attempted = Number(req.body.attempted);
   const correct = Number(req.body.correct);
@@ -186,7 +167,6 @@ app.post("/api/aptitude/practice", auth, wrap(async (req, res) => {
   if (!(attempted > 0) || correct < 0 || correct > attempted)
     return res.status(400).json({ error: "Enter valid numbers (correct cannot be more than attempted)." });
 
-  // first practice creates the row, later practices add to it
   const [rows] = await pool.query("SELECT id FROM aptitude WHERE category = ? AND user_id = ?", [category, req.userId]);
   if (rows.length === 0)
     await pool.query("INSERT INTO aptitude (user_id, category, attempted, correct) VALUES (?, ?, ?, ?)",
@@ -196,8 +176,6 @@ app.post("/api/aptitude/practice", auth, wrap(async (req, res) => {
       [attempted, correct, rows[0].id]);
   res.json({ ok: true });
 }));
-
-// ---------- STUDY PLANNER ----------
 
 app.get("/api/planner", auth, wrap(async (req, res) => {
   const [rows] = await pool.query("SELECT * FROM planner WHERE user_id = ? ORDER BY id", [req.userId]);
@@ -216,8 +194,6 @@ app.delete("/api/planner/:id", auth, wrap(async (req, res) => {
   await pool.query("DELETE FROM planner WHERE id = ? AND user_id = ?", [req.params.id, req.userId]);
   res.json({ ok: true });
 }));
-
-// ---------- GOALS ----------
 
 app.get("/api/goals", auth, wrap(async (req, res) => {
   const [rows] = await pool.query("SELECT * FROM goals WHERE user_id = ? ORDER BY id", [req.userId]);
@@ -243,8 +219,6 @@ app.delete("/api/goals/:id", auth, wrap(async (req, res) => {
   res.json({ ok: true });
 }));
 
-// ---------- DASHBOARD TASKS ----------
-
 app.get("/api/tasks", auth, wrap(async (req, res) => {
   const [rows] = await pool.query("SELECT * FROM tasks WHERE user_id = ? ORDER BY id", [req.userId]);
   res.json(rows);
@@ -266,8 +240,6 @@ app.delete("/api/tasks/:id", auth, wrap(async (req, res) => {
   await pool.query("DELETE FROM tasks WHERE id = ? AND user_id = ?", [req.params.id, req.userId]);
   res.json({ ok: true });
 }));
-
-// ---------- LEARNING RESOURCES ----------
 
 app.get("/api/resources", auth, wrap(async (req, res) => {
   const [rows] = await pool.query("SELECT * FROM resources WHERE user_id = ? ORDER BY id DESC", [req.userId]);
@@ -296,8 +268,7 @@ app.delete("/api/resources/:id", auth, wrap(async (req, res) => {
   res.json({ ok: true });
 }));
 
-// ---------- STATS (Dashboard + Placement pages) ----------
-// Every percentage is calculated from the user's real data.
+
 
 const percent = (part, whole) => (whole > 0 ? Math.round((part / whole) * 100) : 0);
 
@@ -331,8 +302,6 @@ app.get("/api/stats", auth, wrap(async (req, res) => {
     recent,
   });
 }));
-
-// ---------- START ----------
 
 const PORT = process.env.PORT || 5000;
 

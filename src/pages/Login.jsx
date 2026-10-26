@@ -1,4 +1,3 @@
-// Login.jsx — Login page shown to users who are not logged in
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { api, saveSession } from "../api";
@@ -13,19 +12,17 @@ function Login() {
   }
 
   async function handleLogin(e) {
-    e.preventDefault(); // stop page from refreshing
+    e.preventDefault();
 
-    // Basic validation
     if (!form.email || !form.password) {
       setError("Please fill in all fields.");
       return;
     }
 
     try {
-      // Ask the backend to check email + password
       const data = await api("/login", "POST", form);
-      saveSession(data.token, data.user); // ✅ login success — save session
-      navigate("/"); // go to Dashboard
+      saveSession(data.token, data.user);
+      navigate("/");
     } catch (err) {
       setError(err.message);
     }
@@ -35,13 +32,11 @@ function Login() {
     <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
 
-        {/* Logo */}
         <h1 className="text-3xl font-extrabold text-center bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent mb-2">
           PlaceTrack
         </h1>
         <p className="text-center text-slate-400 text-sm mb-8">Your placement preparation tracker</p>
 
-        {/* Card */}
         <div className="bg-slate-800 border border-slate-700 rounded-2xl p-7">
           <h2 className="text-xl font-bold text-slate-100 mb-1">Welcome back!</h2>
           <p className="text-slate-400 text-sm mb-6">Login to continue your preparation.</p>
@@ -70,7 +65,6 @@ function Login() {
               />
             </div>
 
-            {/* Error message */}
             {error && <p className="text-red-400 text-xs">{error}</p>}
 
             <button

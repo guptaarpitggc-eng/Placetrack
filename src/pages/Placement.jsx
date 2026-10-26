@@ -1,4 +1,3 @@
-// Placement.jsx — Placement Readiness page (calculated from your real data)
 import { useState, useEffect } from "react";
 import Sidebar from "../Sidebar";
 import useUser from "../useUser";
@@ -27,7 +26,7 @@ function Placement() {
     { area: "Aptitude",      score: stats.aptitude },
     { area: "Goals",         score: stats.goals },
   ];
-  // Recommend the 3 weakest areas first
+  // Prioritize recommendations for the three lowest-scoring areas.
   const tips = [...breakdown].sort((a, b) => a.score - b.score).slice(0, 3).map((b) => tipFor[b.area]);
 
   const message =
@@ -47,7 +46,6 @@ function Placement() {
         <main className="max-w-5xl mx-auto p-7">
           <div className="mb-6"><h1 className="text-2xl font-bold text-slate-100">Placement Preparation</h1><p className="text-slate-400 text-sm mt-1">Your preparation across important placement areas.</p></div>
 
-          {/* Readiness + Breakdown */}
           <section className="grid grid-cols-2 gap-5 mb-5">
             <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
               <h2 className="font-semibold text-slate-100">Overall Readiness</h2>
@@ -68,7 +66,6 @@ function Placement() {
             </div>
           </section>
 
-          {/* Focus Tips */}
           <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
             <h2 className="font-semibold text-slate-100 mb-3">Recommended Focus</h2>
             {tips.map((tip, i) => <p key={i} className="text-sm text-slate-400 my-2">{i + 1}. {tip}</p>)}

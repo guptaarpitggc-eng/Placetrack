@@ -1,4 +1,3 @@
-// Signup.jsx — New user registration page
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { api, saveSession } from "../api";
@@ -15,7 +14,6 @@ function Signup() {
   async function handleSignup(e) {
     e.preventDefault();
 
-    // Validation
     if (!form.name || !form.email || !form.password || !form.confirm) {
       setError("Please fill in all fields.");
       return;
@@ -30,10 +28,9 @@ function Signup() {
     }
 
     try {
-      // Save the new user in MySQL through the backend
       const data = await api("/signup", "POST", { name: form.name, email: form.email, password: form.password });
-      saveSession(data.token, data.user); // auto-login after signup
-      navigate("/"); // go to Dashboard — everything starts fresh!
+      saveSession(data.token, data.user);
+      navigate("/");
     } catch (err) {
       setError(err.message);
     }
@@ -43,13 +40,11 @@ function Signup() {
     <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
 
-        {/* Logo */}
         <h1 className="text-3xl font-extrabold text-center bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent mb-2">
           PlaceTrack
         </h1>
         <p className="text-center text-slate-400 text-sm mb-8">Start your placement journey today</p>
 
-        {/* Card */}
         <div className="bg-slate-800 border border-slate-700 rounded-2xl p-7">
           <h2 className="text-xl font-bold text-slate-100 mb-1">Create Account</h2>
           <p className="text-slate-400 text-sm mb-6">Sign up to track your preparation.</p>
@@ -100,7 +95,6 @@ function Signup() {
               />
             </div>
 
-            {/* Error message */}
             {error && <p className="text-red-400 text-xs">{error}</p>}
 
             <button

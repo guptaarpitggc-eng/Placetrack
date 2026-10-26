@@ -1,4 +1,3 @@
-// App.jsx — Main file. Handles all routes + login protection.
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Login     from "./pages/Login";
@@ -13,9 +12,7 @@ import Placement from "./pages/Placement";
 import Profile   from "./pages/Profile";
 import Resources from "./pages/Resources";
 
-// ProtectedRoute — checks if user is logged in
-// If NOT logged in → send to /login
-// If logged in → show the page normally
+// Restrict application routes to authenticated users.
 function ProtectedRoute({ children }) {
   const isLoggedIn = localStorage.getItem("placetrack_token");
   if (!isLoggedIn) return <Navigate to="/login" />;
@@ -26,11 +23,11 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public pages — anyone can access */}
+        {/* Authentication routes are available without an active session. */}
         <Route path="/login"  element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* Protected pages — only logged-in users */}
+        {/* Application routes require authentication. */}
         <Route path="/"          element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/dsa"       element={<ProtectedRoute><DSA /></ProtectedRoute>} />
         <Route path="/subjects"  element={<ProtectedRoute><Subjects /></ProtectedRoute>} />

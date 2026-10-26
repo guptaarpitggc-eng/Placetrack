@@ -1,4 +1,3 @@
-// Subjects.jsx — CS Fundamentals page (the user adds their own subjects; saved in MySQL)
 import { useState, useEffect } from "react";
 import Sidebar from "../Sidebar";
 import useUser from "../useUser";
@@ -28,7 +27,6 @@ function Subjects() {
     } catch (err) { alert(err.message); }
   }
 
-  // change = +1 or -1 completed topic
   async function change(s, change) {
     await api("/subjects/" + s.id, "PUT", { done: s.done + change });
     load();

@@ -1,4 +1,3 @@
-// Goals.jsx — My Goals page (saved in MySQL)
 import { useState, useEffect } from "react";
 import Sidebar from "../Sidebar";
 import useUser from "../useUser";

@@ -1,4 +1,3 @@
-// Profile.jsx — loads and saves the profile in MySQL
 import { useState, useEffect } from "react";
 import Sidebar from "../Sidebar";
 import { api } from "../api";
@@ -12,7 +11,6 @@ function Profile() {
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
 
-  // Load the saved profile from the backend
   useEffect(() => {
     api("/profile").then(setForm).catch((err) => setError(err.message));
   }, []);
@@ -23,7 +21,6 @@ function Profile() {
     setError("");
     try {
       await api("/profile", "PUT", form);
-      // keep the name/email in the header up to date
       localStorage.setItem("placetrack_user", JSON.stringify({ name: form.name, email: form.email }));
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
@@ -57,7 +54,6 @@ function Profile() {
           <div className="mb-6"><h1 className="text-2xl font-bold text-slate-100">My Profile</h1><p className="text-slate-400 text-sm mt-1">Keep your basic information updated.</p></div>
 
           <div className="bg-slate-800 border border-slate-700 rounded-xl p-7">
-            {/* Avatar row */}
             <div className="flex items-center gap-4 pb-5 border-b border-slate-700 mb-5">
               <div className="w-14 h-14 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-2xl font-extrabold">
                 {userInitial}
@@ -68,7 +64,6 @@ function Profile() {
               </div>
             </div>
 
-            {/* Form grid */}
             <div className="grid grid-cols-2 gap-4">
               {fields.map((f) => (
                 <div key={f.name}>
@@ -90,7 +85,6 @@ function Profile() {
               </div>
             </div>
 
-            {/* Save */}
             <div className="flex items-center gap-4 mt-6">
               <button onClick={handleSave} className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-5 py-2 rounded-lg text-sm font-semibold">
                 Save Changes

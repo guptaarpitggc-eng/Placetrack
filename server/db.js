@@ -1,4 +1,3 @@
-// db.js — connects to MySQL and creates the database + tables if they don't exist
 require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
@@ -11,7 +10,6 @@ const config = {
 };
 const dbName = process.env.DB_NAME || "placetrack";
 
-// 1) create database if missing  2) create tables from schema.sql
 async function initDatabase() {
   const first = await mysql.createConnection(config);
   await first.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\``);
@@ -22,7 +20,6 @@ async function initDatabase() {
   await second.end();
 }
 
-// pool = reusable connections used by every route
 const pool = mysql.createPool({ ...config, database: dbName, connectionLimit: 5 });
 
 module.exports = { pool, initDatabase };

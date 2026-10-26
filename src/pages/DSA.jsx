@@ -1,4 +1,3 @@
-// DSA.jsx — DSA Tracker page (problems are saved in MySQL)
 import { useState, useEffect } from "react";
 import Sidebar from "../Sidebar";
 import useUser from "../useUser";
@@ -35,7 +34,7 @@ function DSA() {
     } catch (err) { alert(err.message); }
   }
 
-  // Click the status to cycle through Pending, In Progress, Solved and Revision Needed.
+  // Cycle through the supported workflow states when a status is selected.
   const statuses = ["Pending", "In Progress", "Solved", "Revision Needed"];
   async function toggleStatus(p) {
     const next = statuses[(statuses.indexOf(p.status) + 1) % statuses.length];
@@ -49,7 +48,6 @@ function DSA() {
 
   const solved = problems.filter((p) => p.status === "Solved").length;
 
-  // Topic progress is calculated from the problems list
   const topicNames = [...new Set(problems.map((p) => p.topic))];
   const topics = topicNames.map((name) => {
     const all = problems.filter((p) => p.topic === name);

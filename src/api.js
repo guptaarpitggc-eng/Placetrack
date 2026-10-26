@@ -1,8 +1,4 @@
-// api.js — one small helper used by every page to talk to the Node backend.
-// Usage:  const data = await api("/problems");
-//         await api("/problems", "POST", { name: "Two Sum" });
-
-const BASE = "/api"; // vite.config.js forwards /api to http://localhost:5000
+const BASE = "/api";
 
 export async function api(path, method = "GET", body) {
   const token = localStorage.getItem("placetrack_token");
@@ -23,7 +19,7 @@ export async function api(path, method = "GET", body) {
 
   const data = await res.json().catch(() => ({}));
 
-  // Token expired / invalid → log out and go to login page
+  // Clear the local session when the API reports an expired or invalid token.
   if (res.status === 401 && token) {
     clearSession();
     window.location.href = "/login";
@@ -34,7 +30,7 @@ export async function api(path, method = "GET", body) {
 
 export function saveSession(token, user) {
   localStorage.setItem("placetrack_token", token);
-  localStorage.setItem("placetrack_user", JSON.stringify(user)); // name + email for the header
+  localStorage.setItem("placetrack_user", JSON.stringify(user));
 }
 
 export function clearSession() {
