@@ -1,428 +1,495 @@
-# 🚀 PlaceTrack — Placement Preparation Tracker
+# 🎯 PlaceTrack — Placement Preparation Tracker
 
-**Prepare smarter. Track your progress. Get placement-ready.**
+*PlaceTrack* is a full-stack web application designed to help students organize and track their placement preparation in one place. It provides a centralized dashboard for managing DSA practice, technical subjects, aptitude preparation, daily tasks, study plans, goals, and learning resources.
 
-PlaceTrack is a full-stack web application designed to help students organize and track their placement preparation in one place. It brings DSA practice, aptitude preparation, core computer science subjects, daily study planning, goals, and learning resources together in a single platform.
-
-The goal of PlaceTrack is to help students maintain consistency, monitor their progress, and identify areas that need more attention during placement preparation.
+The application is built using the *MERN stack* and deployed using Render, with MongoDB Atlas for cloud database storage.
 
 ---
 
-## 📌 Table of Contents
+## 🚀 Live Demo
 
-- [Overview](#-overview)
-- [Features](#-features)
-- [Technology Stack](#-technology-stack)
-- [Project Structure](#-project-structure)
-- [Getting Started](#-getting-started)
-- [Environment Configuration](#-environment-configuration)
-- [Database Setup](#-database-setup)
-- [Running the Application](#-running-the-application)
-- [Application URLs](#-application-urls)
-- [Troubleshooting](#-troubleshooting)
-- [Future Improvements](#-future-improvements)
-- [Contributing](#-contributing)
-- [Author](#-author)
-- [License](#-license)
+- *Frontend:* https://placetrack-9nop.onrender.com
+- *Backend API:* https://placetrack-api-c3zj.onrender.com
 
----
-
-## 📖 Overview
-
-Preparing for placements involves managing multiple activities, including solving coding problems, practicing aptitude questions, revising core subjects, and following a consistent study schedule.
-
-PlaceTrack provides a centralized platform where students can organize these activities and monitor their preparation.
-
-Instead of maintaining separate spreadsheets or notes, students can use PlaceTrack to record their progress, manage daily goals, and access useful learning resources.
+> The frontend is the main application. The backend URL displays a server status page and provides API endpoints.
 
 ---
 
 ## ✨ Features
 
-### 📊 1. Placement Preparation Dashboard
+### 🔐 Authentication
+- User registration and login.
+- JWT-based authentication.
+- Protected API routes.
+- Persistent login sessions using browser local storage.
+- Logout and session clearing.
 
-- View an overview of placement preparation.
-- Monitor progress across different preparation modules.
-- Track completed activities and pending tasks.
-- Access important preparation information from one place.
+### 📊 Dashboard
+- Centralized placement preparation dashboard.
+- Overview of preparation progress.
+- Summary statistics for tracked activities.
 
-### 💻 2. DSA Progress Tracker
+### 💻 DSA Problem Tracker
+- Add coding problems.
+- View and manage saved problems.
+- Update problem details and completion status.
+- Delete problems when no longer needed.
 
-- Organize coding problems by topic.
-- Track problem difficulty and completion status.
-- Manage problems using statuses such as Pending, In Progress, Solved, and Revision Needed.
-- Identify topics that require more practice.
-- Monitor progress through problem-solving statistics.
+### 📚 Subject Tracker
+- Organize technical subjects.
+- Track subject preparation.
+- Add, update, and remove subject entries.
 
-### 🧠 3. Aptitude Preparation Tracker
+### 🧠 Aptitude Practice
+- Access aptitude practice functionality.
+- Record practice activity.
+- Track aptitude preparation progress.
 
-- Organize aptitude practice by category.
-- Track questions attempted and correct answers.
-- Calculate accuracy percentages.
-- Monitor preparation across quantitative aptitude, logical reasoning, and verbal ability.
+### 📅 Study Planner
+- Create study plans.
+- Organize preparation activities.
+- View and manage planned tasks.
 
-### 📚 4. Core Subjects Tracker
+### 🎯 Goals
+- Set placement preparation goals.
+- Update goal details and progress.
+- Delete completed or unnecessary goals.
 
-- Organize computer science subjects and their topics.
-- Track completed and pending topics.
-- Manage revision progress.
-- Support preparation for technical placement interviews.
+### ✅ Task Management
+- Create daily preparation tasks.
+- Update task information and status.
+- Delete tasks when completed or no longer required.
 
-### 📅 5. Daily Study Planner
-
-- Create and manage study plans and tasks.
-- Organize tasks according to preparation areas.
-- Track daily study activities.
-- Mark tasks as completed.
-- Monitor study progress.
-
-### 🎯 6. Goals and Progress Tracking
-
-- Create personal preparation goals.
-- Track progress toward learning targets.
-- Monitor completed activities.
-- Encourage consistent study habits.
-
-### 🔗 7. Learning Resources
-
+### 🔗 Learning Resources
 - Save useful learning resources.
-- Organize resources by category and type.
-- Store resource titles, URLs, and descriptions.
-- Keep important study materials accessible from one place.
+- Organize links for placement preparation.
+- Manage saved resources.
 
-### 🔐 8. User Authentication
-
-- Register an account and log in.
-- Authenticate users through the backend.
-- Use token-based authentication to protect API endpoints.
-- Associate application data with individual users.
+### ☁️ Cloud Database
+- MongoDB Atlas integration.
+- User-specific data storage.
+- Persistent data across sessions and devices when using the same account.
 
 ---
 
-## 🛠️ Technology Stack
+## 🛠️ Tech Stack
 
-| Technology | Purpose |
-|---|---|
-| React | Frontend user interface |
-| Vite | Frontend development server and build tool |
-| JavaScript | Application logic |
-| Node.js | Backend JavaScript runtime |
-| Express.js | Backend server and REST API |
-| MongoDB Atlas | Cloud NoSQL database |
-| Mongoose | MongoDB object data modeling |
-| JWT | Token-based authentication |
-| HTML5 | Web page structure |
-| CSS3 | Styling and layout |
-| Git and GitHub | Version control and collaboration |
+### Frontend
+- React
+- Vite
+- JavaScript
+- Tailwind CSS
+- HTML5
+- CSS3
+
+### Backend
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
+- JSON Web Tokens (JWT)
+
+### Development Tools
+- Git
+- GitHub
+- npm
+- Visual Studio Code
+
+### Deployment
+- Render — Frontend static site
+- Render — Backend web service
+- MongoDB Atlas — Cloud database
 
 ---
 
 ## 📁 Project Structure
 
-The following is a representative structure of the project. Some directories and files may differ depending on the current version.
+text
+Placetrack_GitHub/
+│
+├── server/
+│   ├── models/
+│   │   ├── Problem.js
+│   │   ├── Resource.js
+│   │   ├── Subject.js
+│   │   ├── Task.js
+│   │   └── User.js
+│   │
+│   ├── .env.example
+│   ├── db.js
+│   ├── package.json
+│   ├── package-lock.json
+│   └── server.js
+│
+├── src/
+│   ├── assets/
+│   ├── pages/
+│   ├── api.js
+│   ├── App.jsx
+│   ├── index.css
+│   ├── main.jsx
+│   ├── Sidebar.jsx
+│   └── useUser.js
+│
+├── .gitignore
+├── index.html
+├── package.json
+├── package-lock.json
+├── README.md
+└── vite.config.js
 
-```text
-PlaceTrack/
-│
-├── public/                    # Static assets
-│
-├── src/                       # Frontend source code
-│   ├── pages/                 # Application pages
-│   ├── App.jsx                # Main React application
-│   ├── api.js                 # API communication
-│   └── main.jsx               # Frontend entry point
-│
-├── server/                    # Backend application
-│   ├── models/                # Mongoose data models
-│   ├── server.js              # Express server and API routes
-│   ├── db.js                  # MongoDB connection
-│   ├── package.json           # Backend dependencies
-│   ├── package-lock.json      # Backend dependency lockfile
-│   └── .env.example           # Example environment configuration
-│
-├── index.html                 # Frontend HTML entry point
-├── package.json               # Frontend dependencies and scripts
-├── package-lock.json          # Frontend dependency lockfile
-├── vite.config.js             # Vite configuration
-├── .gitignore                 # Git ignore rules
-└── README.md                  # Project documentation
-```
 
 ---
 
-## 🚀 Getting Started
-
-Follow these instructions to run PlaceTrack locally.
+## ⚙️ Installation and Setup
 
 ### Prerequisites
 
-Install the following software:
+Install the following tools before running the project locally:
 
-- **Node.js and npm:** [Download Node.js](https://nodejs.org/)
-- **Git:** [Download Git](https://git-scm.com/downloads)
-- **Visual Studio Code:** [Download VS Code](https://code.visualstudio.com/) (recommended)
-
-You also need:
-
-- A MongoDB Atlas account and configured cluster.
-- A MongoDB database user with appropriate permissions.
-- Network access configured to allow your backend to connect to the cluster.
-
-Verify that Node.js and npm are installed:
-
-```bash
-node -v
-npm -v
-```
-
----
+- Node.js and npm
+- Git
+- Visual Studio Code
+- A MongoDB Atlas account or another accessible MongoDB database
 
 ### 1. Clone the Repository
 
-Replace `<your-username>` with your GitHub username and use your actual repository name.
+bash
+git clone https://github.com/guptaarpitggc-eng/Placetrack.git
 
-```bash
-git clone https://github.com/<your-username>/<your-repository>.git
-```
 
 Navigate to the project directory:
 
-```bash
-cd <your-repository>
-```
+bash
+cd Placetrack
 
-Alternatively, download your repository from GitHub and extract it.
 
-### 2. Install Frontend Dependencies
+### 2. Configure the Backend
 
-From the project root, run:
+Navigate to the server directory:
 
-```bash
-npm install
-```
-
-### 3. Install Backend Dependencies
-
-Navigate to the backend directory:
-
-```bash
+bash
 cd server
+
+
+Install the backend dependencies:
+
+bash
 npm install
-```
 
----
 
-## ⚙️ Environment Configuration
+Create a .env file inside the server/ directory.
 
-The backend requires environment variables for MongoDB connectivity and authentication.
+Add the following environment variables:
 
-### 1. Create the Environment File
-
-From the `server` directory, create a local `.env` file using the example configuration.
-
-**Windows PowerShell:**
-
-```powershell
-Copy-Item .env.example .env
-```
-
-**macOS/Linux:**
-
-```bash
-cp .env.example .env
-```
-
-If `.env` already exists, do not overwrite your working configuration.
-
-### 2. Configure Environment Variables
-
-Open `server/.env` and configure the required values:
-
-```env
+env
 PORT=5000
-MONGODB_URI=your_mongodb_atlas_connection_string
-JWT_SECRET=replace_with_a_long_random_secret
-```
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_long_random_secret
 
-- `PORT`: Port on which the backend server runs.
-- `MONGODB_URI`: MongoDB Atlas connection string.
-- `JWT_SECRET`: A strong, unique secret used for token authentication.
 
-Use the actual environment variable names expected by the backend. Keep your existing working configuration if it uses additional variables.
+Replace the example values with your actual MongoDB connection string and a strong, unique JWT secret.
 
-### 3. Protect Your Credentials
+*Important:* Never commit your .env file or publish database credentials and JWT secrets.
 
-- Never commit `.env` to GitHub.
-- Never publish your MongoDB connection string or database password.
-- Use a strong, unique JWT secret.
-- Do not place real credentials in `.env.example`.
-- Use appropriate MongoDB Atlas database permissions and network access restrictions.
+### 3. Start the Backend
 
----
+From the server/ directory, run:
 
-## 🗄️ Database Setup
-
-PlaceTrack uses **MongoDB Atlas** as its database.
-
-### 1. Create a MongoDB Atlas Cluster
-
-Create a cluster through [MongoDB Atlas](https://www.mongodb.com/atlas).
-
-### 2. Configure Database Access
-
-Create a database user and grant only the permissions required by your application.
-
-Configure network access to allow connections from your development environment or deployment server.
-
-### 3. Configure the Connection String
-
-Copy your MongoDB connection string from Atlas and add it to `server/.env`:
-
-```env
-MONGODB_URI=your_mongodb_atlas_connection_string
-```
-
-Replace the placeholder with your actual connection string. Do not commit the real value.
-
-### 4. Start the Backend
-
-When the backend starts, it connects to MongoDB using the configured connection string.
-
-Application data is managed through the Mongoose models in `server/models/`. Collections and documents are used instead of relational tables.
-
----
-
-## ▶️ Running the Application
-
-The frontend and backend must run simultaneously during local development.
-
-### Terminal 1: Start the Backend
-
-Open a terminal and navigate to the backend directory:
-
-```powershell
-cd server
+bash
 npm start
-```
+
 
 The backend should start on:
 
-```text
+text
 http://localhost:5000
-```
 
-The terminal should display a successful MongoDB connection message.
 
-Keep this terminal running.
+To verify that the backend is running, open:
 
-### Terminal 2: Start the Frontend
+text
+http://localhost:5000
 
-Open a second terminal in the project root:
 
-```powershell
+You should see the server status response.
+
+### 4. Configure the Frontend
+
+Open a second terminal at the project root:
+
+bash
+cd Placetrack
+
+
+Install the frontend dependencies:
+
+bash
+npm install
+
+
+For local development, the Vite configuration proxies /api requests to the backend at http://localhost:5000.
+
+Make sure the backend is running before using the frontend.
+
+### 5. Start the Frontend
+
+Run:
+
+bash
 npm run dev
-```
 
-Vite will display the local development URL, usually:
 
-```text
-http://localhost:5173/
-```
+Open the local URL displayed in your terminal. With the default Vite configuration, it is usually:
 
-Open that address in your browser to use PlaceTrack.
+text
+http://localhost:5173
 
-If the frontend or backend uses a different port, use the URL displayed in the terminal and ensure the frontend API configuration matches the backend.
+
+You can now register an account and start using PlaceTrack.
 
 ---
 
-## 🌐 Application URLs
+## 🌐 Deployment on Render
 
-| Component | Local URL |
+PlaceTrack is deployed as two separate Render services.
+
+### Frontend — Static Site
+
+- *Service type:* Static Site
+- *Repository:* guptaarpitggc-eng/Placetrack
+- *Branch:* main
+- *Root Directory:* Leave blank
+- *Build Command:*
+
+bash
+npm install && npm run build
+
+
+- *Publish Directory:*
+
+text
+dist
+
+
+Configure the following environment variable in the frontend's Render settings:
+
+| Variable | Value |
 |---|---|
-| Frontend | http://localhost:5173/ |
-| Backend | http://localhost:5000/ |
+| VITE_API_URL | https://placetrack-api-c3zj.onrender.com |
 
-These are local development addresses. They do not make the application publicly accessible over the internet.
+The frontend uses this variable to send API requests to the deployed backend.
 
----
+### Backend — Web Service
 
-## 🛠️ Troubleshooting
+- *Service type:* Web Service
+- *Repository:* guptaarpitggc-eng/Placetrack
+- *Branch:* main
+- *Root Directory:* server
+- *Build Command:*
 
-### MongoDB Connection Fails
-
-Check the following:
-
-- `MONGODB_URI` is correctly configured in `server/.env`.
-- Your MongoDB Atlas database user has the necessary permissions.
-- Your current IP address or server IP is allowed in Atlas network access settings.
-- Your network connection is working.
-- The connection string contains the correct credentials and database address.
-
-### Backend Does Not Start
-
-Verify that backend dependencies are installed:
-
-```bash
-cd server
+bash
 npm install
+
+
+- *Start Command:*
+
+bash
 npm start
-```
 
-Check the terminal for errors and confirm that the configured port is available.
 
-### Frontend Does Not Start
+Configure the following environment variables in the backend's Render settings:
 
-From the project root, run:
+| Variable | Description |
+|---|---|
+| MONGODB_URI | MongoDB Atlas connection string |
+| JWT_SECRET | Strong, unique secret used to sign JWTs |
+| PORT | Usually assigned automatically by Render; the server should use process.env.PORT |
 
-```bash
-npm install
+Do not add real credentials to this README or commit them to GitHub.
+
+> *Note:* If you change a service's URL, update VITE_API_URL in the frontend environment settings and redeploy the frontend.
+
+---
+
+## 🔌 API Endpoints
+
+The backend exposes REST API endpoints under /api.
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| POST | /api/signup | Register a new user |
+| POST | /api/login | Log in a user |
+| GET | /api/profile | Retrieve the authenticated user's profile |
+| PUT | /api/profile | Update the user's profile |
+| GET | /api/problems | Retrieve coding problems |
+| POST | /api/problems | Create a coding problem |
+| PUT | /api/problems/:id | Update a coding problem |
+| DELETE | /api/problems/:id | Delete a coding problem |
+| GET | /api/subjects | Retrieve subjects |
+| POST | /api/subjects | Create a subject |
+| PUT | /api/subjects/:id | Update a subject |
+| DELETE | /api/subjects/:id | Delete a subject |
+| GET | /api/aptitude | Retrieve aptitude data |
+| POST | /api/aptitude/practice | Record aptitude practice |
+| GET | /api/planner | Retrieve study plans |
+| POST | /api/planner | Create a study plan |
+| DELETE | /api/planner/:id | Delete a study plan |
+| GET | /api/goals | Retrieve goals |
+| POST | /api/goals | Create a goal |
+| PUT | /api/goals/:id | Update a goal |
+| DELETE | /api/goals/:id | Delete a goal |
+| GET | /api/tasks | Retrieve tasks |
+| POST | /api/tasks | Create a task |
+| PUT | /api/tasks/:id | Update a task |
+| DELETE | /api/tasks/:id | Delete a task |
+| GET | /api/resources | Retrieve learning resources |
+| POST | /api/resources | Create a resource |
+| DELETE | /api/resources/:id | Delete a resource |
+| GET | /api/stats | Retrieve dashboard statistics |
+
+*Authentication:* Protected endpoints require a valid JWT in the request header:
+
+http
+Authorization: Bearer <your_token>
+
+
+The exact request fields and response formats depend on the implementation of each endpoint.
+
+---
+
+## 🗄️ Database
+
+PlaceTrack uses MongoDB with Mongoose for database operations.
+
+The backend connects to the configured MongoDB database through the MONGODB_URI environment variable.
+
+The application uses Mongoose models to organize data, including:
+
+- *User* — User accounts and profile information.
+- *Problem* — DSA problem records.
+- *Subject* — Technical subject records.
+- *Task* — Preparation tasks.
+- *Resource* — Saved learning resources.
+
+Other application data, such as goals, study plans, and aptitude practice, is handled by the backend's data models and routes.
+
+Data is stored in MongoDB rather than being limited to the browser's temporary session.
+
+---
+
+## 🔒 Security
+
+PlaceTrack uses several security-related mechanisms:
+
+- JWT-based authentication.
+- Protected API routes.
+- Environment variables for sensitive configuration.
+- MongoDB database access through the backend.
+- Session token storage in browser local storage.
+
+### Security Best Practices
+
+- Never commit .env files.
+- Never expose MongoDB passwords or JWT secrets.
+- Use strong, unique secrets in production.
+- Restrict MongoDB Atlas network access appropriately.
+- Keep dependencies updated.
+- Use HTTPS for deployed services.
+
+*Note:* Browser local storage is convenient for session persistence, but it is accessible to JavaScript running on the page. Avoid storing sensitive personal information in it.
+
+---
+
+## 🧪 Build and Test
+
+### Build the Frontend
+
+From the project root:
+
+bash
+npm run build
+
+
+This generates the production-ready frontend in the dist/ directory.
+
+### Run the Frontend Locally
+
+bash
 npm run dev
-```
 
-If the development server selects a different port, open the URL displayed in the terminal.
 
-### Login or API Requests Fail
+### Run the Backend
 
-- Confirm that the backend is running.
-- Check the browser's developer console for frontend errors.
-- Check the backend terminal for API errors.
-- Verify that the frontend is sending requests to the correct backend address.
-- Confirm that the authentication token is being handled correctly.
+From the server/ directory:
+
+bash
+npm start
+
 
 ---
 
-## 🔮 Future Improvements
+## 🔄 Development Workflow
 
-Potential enhancements for future versions include:
+The project uses Git and GitHub for version control.
 
-- **Enhanced Analytics:** More detailed progress charts and weekly reports.
-- **Revision Reminders:** Reminders for DSA problems that need revision.
-- **Placement Readiness Score:** A summary of progress across preparation modules.
-- **Study Streaks:** Track consecutive days of study activity.
-- **Improved Resource Management:** Better organization, filtering, and categorization of learning resources.
-- **Authentication Enhancements:** Additional authentication and account recovery options.
+To check your current changes:
 
-These are possible future enhancements and may not be implemented in the current version.
+bash
+git status
+
+
+To stage changes:
+
+bash
+git add .
+
+
+To commit changes:
+
+bash
+git commit -m "Describe your changes"
+
+
+To push changes to GitHub:
+
+bash
+git push origin main
+
+
+If automatic deployment is enabled in Render, pushing changes to the configured branch can trigger a new deployment.
 
 ---
 
-## 🤝 Contributing
+## 🎯 Project Objectives
 
-Contributions, suggestions, and bug reports are welcome.
+PlaceTrack aims to:
 
-1. Fork the repository.
-2. Create a feature branch.
-3. Make your changes.
-4. Test the changes locally.
-5. Submit a pull request describing your changes.
-
-Please avoid committing secrets, environment files, generated build output, or unnecessary dependency directories.
+- Help students organize placement preparation.
+- Encourage consistent DSA practice.
+- Make technical subject revision easier to manage.
+- Support aptitude preparation and daily planning.
+- Track goals and tasks in one place.
+- Provide a centralized collection of learning resources.
+- Offer a full-stack application with persistent cloud data.
 
 ---
 
+## 🔮 Future Enhancements
+
+Potential improvements include:
+
+- Advanced analytics and preparation reports.
+- Calendar integration and reminders.
+- More detailed DSA progress visualization.
+- Improved mobile responsiveness.
+- Enhanced testing and automated CI/CD.
+- Additional study-planning and progress-tracking features.
+
+---
 
 ## 📄 License
 
-Add the appropriate license information for your repository here. If the project does not yet have a license, choose one before distributing it for reuse.
+This project was developed for educational and placement-preparation purposes.
 
----
+Add a specific open-source license if you intend to permit reuse, modification, and redistribution under defined terms.
