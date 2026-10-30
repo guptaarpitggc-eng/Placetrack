@@ -1,9 +1,12 @@
-const BASE = "/api";
+const BASE = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/api`
+  : "/api";
 
 export async function api(path, method = "GET", body) {
   const token = localStorage.getItem("placetrack_token");
 
   let res;
+
   try {
     res = await fetch(BASE + path, {
       method,
@@ -14,7 +17,7 @@ export async function api(path, method = "GET", body) {
       body: body ? JSON.stringify(body) : undefined,
     });
   } catch {
-    throw new Error("Cannot reach the server. Is the backend running on port 5000?");
+    throw new Error("Cannot reach the server. Please check your connection.");
   }
 
   const data = await res.json().catch(() => ({}));
@@ -24,7 +27,11 @@ export async function api(path, method = "GET", body) {
     clearSession();
     window.location.href = "/login";
   }
-  if (!res.ok) throw new Error(data.error || "Something went wrong.");
+
+  if (!res.ok) {
+    throw new Error(data.error || "Something went wrong.");
+  }
+
   return data;
 }
 
