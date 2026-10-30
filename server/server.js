@@ -18,7 +18,6 @@ const Task = require("./models/Task");
 const Resource = require("./models/Resource");
 
 const app = express();
-
 const SECRET = process.env.JWT_SECRET;
 
 if (!SECRET) {
@@ -28,10 +27,7 @@ if (!SECRET) {
 app.use(cors());
 app.use(express.json());
 
-// --------------------------------------------------
-// Common helpers
-// --------------------------------------------------
-
+// Shared helpers for API routes.
 const wrap = (fn) => (req, res, next) =>
   Promise.resolve(fn(req, res, next)).catch(next);
 
@@ -60,8 +56,7 @@ const RESOURCE_TYPES = ["Website", "Video", "Article", "Practice"];
 const percent = (part, whole) =>
   whole > 0 ? Math.round((part / whole) * 100) : 0;
 
-// Convert MongoDB documents to API objects.
-// Preserve the `id` property expected by many frontend components.
+// Convert MongoDB documents into objects compatible with the frontend API.
 function toApi(doc) {
   const obj = doc.toObject ? doc.toObject() : doc;
 
@@ -74,6 +69,7 @@ function toApi(doc) {
   };
 }
 
+// Reject requests containing an invalid MongoDB document ID.
 function validRequestId(req, res, next) {
   if (!isValidId(req.params.id)) {
     return res.status(400).json({ error: "Invalid record ID." });
@@ -82,10 +78,7 @@ function validRequestId(req, res, next) {
   next();
 }
 
-// --------------------------------------------------
-// Authentication middleware
-// --------------------------------------------------
-
+// Verify the JWT and identify the logged-in user.
 function auth(req, res, next) {
   const header = req.headers.authorization || "";
   const token = header.startsWith("Bearer ")
@@ -116,10 +109,7 @@ function auth(req, res, next) {
   }
 }
 
-// --------------------------------------------------
-// Basic server route
-// --------------------------------------------------
-
+// Basic route to confirm that the backend is running.
 app.get("/", (req, res) => {
   res.send(`
     <body style="font-family:sans-serif;background:#0f172a;color:#e2e8f0;padding:40px">
@@ -131,11 +121,7 @@ app.get("/", (req, res) => {
   `);
 });
 
-// --------------------------------------------------
-// SIGNUP
-// POST /api/signup
-// --------------------------------------------------
-
+// Create an account, hash the password, and return a JWT.
 app.post(
   "/api/signup",
   wrap(async (req, res) => {
@@ -190,11 +176,7 @@ app.post(
   })
 );
 
-// --------------------------------------------------
-// LOGIN
-// POST /api/login
-// --------------------------------------------------
-
+// Authenticate a user using their email and password.
 app.post(
   "/api/login",
   wrap(async (req, res) => {
@@ -231,11 +213,7 @@ app.post(
   })
 );
 
-// --------------------------------------------------
-// GET PROFILE
-// GET /api/profile
-// --------------------------------------------------
-
+// Return the profile of the authenticated user.
 app.get(
   "/api/profile",
   auth,
@@ -263,11 +241,7 @@ app.get(
   })
 );
 
-// --------------------------------------------------
-// UPDATE PROFILE
-// PUT /api/profile
-// --------------------------------------------------
-
+// Update profile details while preventing duplicate email addresses.
 app.put(
   "/api/profile",
   auth,
@@ -326,15 +300,7 @@ app.put(
   })
 );
 
-// --------------------------------------------------
-// DSA PROBLEMS
-// --------------------------------------------------
-
-// --------------------------------------------------
-// PROBLEMS
-// --------------------------------------------------
-
-// GET /api/problems
+// DSA problems: retrieve all problems belonging to the logged-in user.
 app.get(
   "/api/problems",
   auth,
@@ -347,7 +313,7 @@ app.get(
   })
 );
 
-// POST /api/problems
+// Add a new DSA problem to the user's list.
 app.post(
   "/api/problems",
   auth,
@@ -375,7 +341,7 @@ app.post(
   })
 );
 
-// PUT /api/problems/:id
+// Update the status of a problem after validating the requested value.
 app.put(
   "/api/problems/:id",
   auth,
@@ -423,7 +389,7 @@ app.put(
   })
 );
 
-// DELETE /api/problems/:id
+// Delete a problem only if it belongs to the authenticated user.
 app.delete(
   "/api/problems/:id",
   auth,
@@ -446,12 +412,7 @@ app.delete(
   })
 );
 
-
-// --------------------------------------------------
-// SUBJECTS
-// --------------------------------------------------
-
-// GET /api/subjects
+// Subjects: retrieve the user's subject progress.
 app.get(
   "/api/subjects",
   auth,
@@ -464,7 +425,7 @@ app.get(
   })
 );
 
-// POST /api/subjects
+// Add a subject with its total number of topics.
 app.post(
   "/api/subjects",
   auth,
@@ -499,7 +460,7 @@ app.post(
   })
 );
 
-// DELETE /api/subjects/:id
+// Remove a subject from the user's tracker.
 app.delete(
   "/api/subjects/:id",
   auth,
@@ -514,7 +475,7 @@ app.delete(
   })
 );
 
-// PUT /api/subjects/:id
+// Update the completed-topic count without exceeding the subject total.
 app.put(
   "/api/subjects/:id",
   auth,
@@ -544,11 +505,7 @@ app.put(
   })
 );
 
-// --------------------------------------------------
-// APTITUDE
-// --------------------------------------------------
-
-// GET /api/aptitude
+// Aptitude: return practice statistics grouped by category.
 app.get(
   "/api/aptitude",
   auth,
@@ -561,7 +518,7 @@ app.get(
   })
 );
 
-// POST /api/aptitude/practice
+// Record attempted and correct aptitude questions for a category.
 app.post(
   "/api/aptitude/practice",
   auth,
@@ -615,11 +572,7 @@ app.post(
   })
 );
 
-// --------------------------------------------------
-// STUDY PLANNER
-// --------------------------------------------------
-
-// GET /api/planner
+// Study planner: retrieve the user's scheduled study sessions.
 app.get(
   "/api/planner",
   auth,
@@ -632,7 +585,7 @@ app.get(
   })
 );
 
-// POST /api/planner
+// Add a study session to the planner.
 app.post(
   "/api/planner",
   auth,
@@ -663,7 +616,7 @@ app.post(
   })
 );
 
-// DELETE /api/planner/:id
+// Remove a scheduled study session.
 app.delete(
   "/api/planner/:id",
   auth,
@@ -678,11 +631,7 @@ app.delete(
   })
 );
 
-// --------------------------------------------------
-// GOALS
-// --------------------------------------------------
-
-// GET /api/goals
+// Goals: retrieve all goals created by the user.
 app.get(
   "/api/goals",
   auth,
@@ -695,7 +644,7 @@ app.get(
   })
 );
 
-// POST /api/goals
+// Create a new preparation goal.
 app.post(
   "/api/goals",
   auth,
@@ -720,7 +669,7 @@ app.post(
   })
 );
 
-// PUT /api/goals/:id
+// Update whether a goal has been completed.
 app.put(
   "/api/goals/:id",
   auth,
@@ -742,7 +691,7 @@ app.put(
   })
 );
 
-// DELETE /api/goals/:id
+// Delete a goal from the tracker.
 app.delete(
   "/api/goals/:id",
   auth,
@@ -757,11 +706,7 @@ app.delete(
   })
 );
 
-// --------------------------------------------------
-// DASHBOARD TASKS
-// --------------------------------------------------
-
-// GET /api/tasks
+// Daily tasks: retrieve the user's dashboard tasks.
 app.get(
   "/api/tasks",
   auth,
@@ -774,7 +719,7 @@ app.get(
   })
 );
 
-// POST /api/tasks
+// Create a daily task.
 app.post(
   "/api/tasks",
   auth,
@@ -798,7 +743,7 @@ app.post(
   })
 );
 
-// PUT /api/tasks/:id
+// Update a task's completion status.
 app.put(
   "/api/tasks/:id",
   auth,
@@ -820,7 +765,7 @@ app.put(
   })
 );
 
-// DELETE /api/tasks/:id
+// Delete a daily task.
 app.delete(
   "/api/tasks/:id",
   auth,
@@ -835,11 +780,7 @@ app.delete(
   })
 );
 
-// --------------------------------------------------
-// LEARNING RESOURCES
-// --------------------------------------------------
-
-// GET /api/resources
+// Learning resources: retrieve saved resources, newest first.
 app.get(
   "/api/resources",
   auth,
@@ -852,7 +793,7 @@ app.get(
   })
 );
 
-// POST /api/resources
+// Save a learning resource after validating its fields and URL.
 app.post(
   "/api/resources",
   auth,
@@ -900,7 +841,7 @@ app.post(
   })
 );
 
-// DELETE /api/resources/:id
+// Delete a saved learning resource.
 app.delete(
   "/api/resources/:id",
   auth,
@@ -915,11 +856,7 @@ app.delete(
   })
 );
 
-// --------------------------------------------------
-// DASHBOARD STATISTICS
-// GET /api/stats
-// --------------------------------------------------
-
+// Calculate dashboard progress using MongoDB aggregation pipelines.
 app.get(
   "/api/stats",
   auth,
@@ -935,7 +872,12 @@ app.get(
       recentProblems,
     ] = await Promise.all([
       Problem.aggregate([
-{ $match: { userId: new mongoose.Types.ObjectId(userId) } },        {
+        {
+          $match: {
+            userId: new mongoose.Types.ObjectId(userId),
+          },
+        },
+        {
           $group: {
             _id: null,
             total: { $sum: 1 },
@@ -1004,13 +946,15 @@ app.get(
         },
       ]),
 
+      // Fetch the four most recently created problems for the dashboard.
       Problem.find({ userId: userId })
-  .sort({ createdAt: -1, _id: -1 })
-  .limit(4)
-  .select("name topic status createdAt")
-  .lean(),
+        .sort({ createdAt: -1, _id: -1 })
+        .limit(4)
+        .select("name topic status createdAt")
+        .lean(),
     ]);
 
+    // Default missing aggregation results to zero.
     const p = problemStats[0] || { total: 0, solved: 0 };
     const s = subjectStats[0] || { done: 0, total: 0 };
     const a = aptitudeStats[0] || { attempted: 0, correct: 0 };
@@ -1046,10 +990,7 @@ app.get(
   })
 );
 
-// --------------------------------------------------
-// Error handler
-// --------------------------------------------------
-
+// Centralized error handler for database and API failures.
 app.use((err, req, res, next) => {
   console.error(err);
 
@@ -1059,22 +1000,19 @@ app.use((err, req, res, next) => {
     });
   }
 
- if (err.name === "ValidationError" || err.name === "CastError") {
-  return res.status(400).json({
-    error: "Invalid data provided.",
-    details: err.message,
-  });
-}
+  if (err.name === "ValidationError" || err.name === "CastError") {
+    return res.status(400).json({
+      error: "Invalid data provided.",
+      details: err.message,
+    });
+  }
 
   res.status(500).json({
     error: "Server error. Check the server terminal.",
   });
 });
 
-// --------------------------------------------------
-// Start server after connecting to MongoDB
-// --------------------------------------------------
-
+// Start accepting requests only after MongoDB connects successfully.
 const PORT = process.env.PORT || 5000;
 
 connectDB()
